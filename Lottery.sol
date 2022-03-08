@@ -29,6 +29,11 @@ contract Lottery {
 		require(hasTicket[msg.sender] == false, "You have already purchased a ticket.");
 		dai.transferFrom(msg.sender, address(this), ticketPrice);
 		hasTicket[msg.sender] = true;
+
+        /*As soon as a ticket is purchased, we can start earning interest on it for the lottery 
+		depositing the DAI transferred from the user's account into the AAVE pool.*/
+		dai.approve(address(pool), ticketPrice);
+		pool.deposit(address(dai), ticketPrice, address(this), 0);
 	}
 
 	event Winner(address);
