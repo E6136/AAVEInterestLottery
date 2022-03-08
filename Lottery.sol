@@ -49,5 +49,15 @@ contract Lottery {
 		as sources of randomness to pick the winner from the array of users addresses*/
 		uint winner = (uint(blockhash(block.number - 1)) * dai.balanceOf(address(pool))) % usersAddresses.length;
 		emit Winner(usersAddresses[winner]);
+
+		/*Each participant should get their money back 
+		and the winner should additionally recieve all interest earned.*/
+		aDai.approve(address(pool), aDai.balanceOf(address(this)));
+		
+		for(uint i = 0; i < usersAddresses.length; i++) {
+			pool.withdraw(address(dai),ticketPrice, usersAddresses[i]);
+		}
+
+		pool.withdraw(address(dai), type(uint).max, usersAddresses[winner]);
 	}
 }
